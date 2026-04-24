@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #020617;
+  color: #d1f2fa;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(16, 123, 185, 0.14), transparent 32%),
+    linear-gradient(180deg, #040c2e 0%, #030712 45%, #020617 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(74, 200, 222, 0.25);
+  color: #ecf8fd;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-emerald-500/20 bg-slate-950/80 p-5 shadow-lg shadow-emerald-950/20 backdrop-blur;
+  }
+
+  .panel-title {
+    @apply text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300/80;
+  }
+
+  .text-muted {
+    @apply text-slate-400;
+  }
+
+  .input-shell {
+    @apply rounded-xl border border-emerald-500/20 bg-slate-900/80 px-4 py-3 text-emerald-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20;
+  }
+
+  .cta-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-100 transition hover:border-emerald-300/40 hover:bg-emerald-500/20;
+  }
+
+  .danger-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-100 transition hover:border-red-300/40 hover:bg-red-500/20;
+  }
+}
