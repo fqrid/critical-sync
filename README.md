@@ -5,12 +5,7 @@ Sistema asimetrico de gestion de crisis para trabajo en parejas:
 - Tecnico: ejecuta acciones y comandos para contencion.
 
 ## Estudiante
-## Estudiante
 - Farid Esteban Castellanos Semanate
-
-## Integrantes
-- Integrante 1: [Nombre completo]
-- Integrante 2: [Nombre completo]
 
 ## Tematica Elegida
 Gestion de Data Center (Infraestructura Cloud)
