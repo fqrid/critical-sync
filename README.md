@@ -7,6 +7,10 @@ Sistema asimetrico de gestion de crisis para trabajo en parejas:
 ## Estudiante
 - Farid Esteban Castellanos Semanate
 
+## Integrantes
+- Integrante 1: [Nombre completo]
+- Integrante 2: [Nombre completo]
+
 
 ## Tematica Elegida
 Gestion de Data Center (Infraestructura Cloud)
@@ -48,19 +52,23 @@ Gestion de Data Center (Infraestructura Cloud)
 ## Instalacion
 1. Instalar dependencias:
    npm install
-2. Ejecutar backend Socket.io:
+2. Instalar dependencias del backend:
+   cd server
+   npm install
+3. Ejecutar backend Socket.io:
    npm run server
-3. Ejecutar frontend en desarrollo:
+4. Ejecutar frontend en desarrollo:
    npm run dev
-4. Build de produccion:
+5. Build de produccion:
    npm run build
-5. Vista previa de build:
+6. Vista previa de build:
    npm run preview
 
 ## Backend Socket.io Basico
 - Archivo: server/index.js
 - Puerto por defecto: 3001 (variable PORT opcional)
 - URL frontend esperada: VITE_SOCKET_URL=http://localhost:3001
+- Documentacion Swagger UI: http://localhost:3001/api-docs
 
 Eventos que recibe y reenvia a todos los clientes:
 - command:run
@@ -72,6 +80,12 @@ Eventos adicionales que emite:
 - log:event
 - mission:state (al conectar)
 - security:code (cuando llega code:submit con code)
+- code:result (respuesta de validacion por sala)
+
+## Uso de Salas
+1. En el Lobby se define nombre, rol y sala compartida.
+2. Monitor y Tecnico deben usar el mismo roomId para compartir la misma crisis.
+3. Cada sala mantiene su propia telemetria, codigo de seguridad y estado critico.
 
 ## Rutas Principales
 - /: Lobby para registro y seleccion de rol.

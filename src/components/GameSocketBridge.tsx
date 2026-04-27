@@ -7,6 +7,7 @@ export function GameSocketBridge() {
   const joinSession = useGameStore((state) => state.joinSession);
   const playerName = useGameStore((state) => state.playerName);
   const playerRole = useGameStore((state) => state.playerRole);
+  const roomId = useGameStore((state) => state.roomId);
   const isSocketOnline = useGameStore((state) => state.isSocketOnline);
 
   useEffect(() => {
@@ -18,10 +19,10 @@ export function GameSocketBridge() {
   }, [connectSocket, disconnectSocket]);
 
   useEffect(() => {
-    if (isSocketOnline && playerName && playerRole) {
+    if (isSocketOnline && playerName && playerRole && roomId) {
       joinSession();
     }
-  }, [isSocketOnline, joinSession, playerName, playerRole]);
+  }, [isSocketOnline, joinSession, playerName, playerRole, roomId]);
 
   return null;
 }

@@ -32,18 +32,26 @@ type BackendLogPayload = {
   message?: string;
 };
 
+type CodeResultPayload = {
+  ok: boolean;
+  message: string;
+  roomId?: string;
+};
+
 type GameState = {
   playerName: string;
   playerRole: PlayerRole | null;
+  roomId: string;
   crisis: CrisisSignal;
   securityCode: string;
   log: CrisisEvent[];
   bridgeCommand: string;
   submittedCode: string;
+  lastCodeResult: CodeResultPayload | null;
   socketRef: Socket | null;
   socket: SimulatedSocket | null;
   isSocketOnline: boolean;
-  setPlayer: (playerName: string, playerRole: PlayerRole) => void;
+  setPlayer: (playerName: string, playerRole: PlayerRole, roomId: string) => void;
   setBridgeCommand: (bridgeCommand: string) => void;
   setSubmittedCode: (submittedCode: string) => void;
   connectSocket: () => void;
@@ -61,8 +69,6 @@ const ROLE_TITLES: Record<PlayerRole, string> = {
 };
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
-
-const generateSecurityCode = () => `${Math.floor(100000 + Math.random() * 900000)}`;
 
 const makeEvent = (severity: CrisisEvent['severity'], message: string): CrisisEvent => ({
   id: crypto.randomUUID(),
@@ -99,29 +105,30 @@ const withTelemetry = (current: CrisisSignal, payload: TelemetryPayload): Crisis
   ddos: clamp(payload.ddos ?? current.ddos),
 });
 
-const initialSecurityCode = generateSecurityCode();
-
 export const useGameStore = create<GameState>((set, get) => ({
   playerName: '',
   playerRole: null,
+  roomId: '',
   crisis: {
     temperature: 42,
     cpu: 34,
     ddos: 18,
   },
-  securityCode: initialSecurityCode,
+  securityCode: '',
   log: [makeEvent('info', 'Centro de datos en vigilancia preventiva. Telemetría inicial recibida.')],
   bridgeCommand: '',
   submittedCode: '',
+  lastCodeResult: null,
   socketRef: null,
   socket: null,
   isSocketOnline: false,
-  setPlayer: (playerName, playerRole) =>
+  setPlayer: (playerName, playerRole, roomId) =>
     set({
       playerName,
       playerRole,
-      securityCode: generateSecurityCode(),
-      log: [...get().log, makeEvent('info', `Operador ${playerName} asignado al rol ${ROLE_TITLES[playerRole]}.`)],
+      roomId,
+      securityCode: '',
+      log: [...get().log, makeEvent('info', `Operador ${playerName} asignado al rol ${ROLE_TITLES[playerRole]} en la sala ${roomId}.`)],
     }),
   setBridgeCommand: (bridgeCommand) => set({ bridgeCommand }),
   setSubmittedCode: (submittedCode) => set({ submittedCode }),
@@ -186,6 +193,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       }));
     });
 
+    socket.on(SOCKET_EVENTS.codeResult, (payload: CodeResultPayload) => {
+      set({ lastCodeResult: payload });
+    });
+
     socket.on(SOCKET_EVENTS.errorEvent, (payload: { message?: string }) => {
       set((state) => ({
         log: [...state.log.slice(-24), makeEvent('warning', payload.message ?? 'Se recibió un error de sincronización.')],
@@ -226,17 +237,18 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   },
   joinSession: () => {
-    const { socketRef, playerName, playerRole } = get();
+    const { socketRef, playerName, playerRole, roomId } = get();
 
-    if (!socketRef || !socketRef.connected || !playerName || !playerRole) return;
+    if (!socketRef || !socketRef.connected || !playerName || !playerRole || !roomId) return;
 
     socketRef.emit(SOCKET_EVENTS.joinSession, {
       playerName,
       playerRole,
+      roomId,
     });
   },
   submitSecurityCode: (code) => {
-    const { socketRef, playerName, playerRole } = get();
+    const { socketRef, playerName, playerRole, roomId } = get();
 
     if (!socketRef || !socketRef.connected) return;
 
@@ -244,6 +256,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       code,
       playerName,
       playerRole,
+      roomId,
     });
   },
   abortMission: () =>
@@ -262,14 +275,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       return {
         playerName: '',
         playerRole: null,
+        roomId: '',
         crisis: {
           temperature: 42,
           cpu: 34,
           ddos: 18,
         },
-        securityCode: generateSecurityCode(),
+        securityCode: '',
         bridgeCommand: '',
         submittedCode: '',
+        lastCodeResult: null,
         log: [...state.log.slice(-24), makeEvent('warning', 'Misión abortada. Sesión desconectada del servidor.')],
       };
     }),
@@ -290,13 +305,14 @@ export const useGameStore = create<GameState>((set, get) => ({
       };
     }),
   submitBridgeCommand: (command) => {
-    const { socketRef, playerName, playerRole } = get();
+    const { socketRef, playerName, playerRole, roomId } = get();
 
     if (socketRef && socketRef.connected) {
       socketRef.emit(SOCKET_EVENTS.commandRun, {
         command: command.trim(),
         playerName,
         playerRole,
+        roomId,
       });
     }
 

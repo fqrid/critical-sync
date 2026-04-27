@@ -3,11 +3,14 @@ import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type PlayerRole, useGameStore } from '../store/useGameStore';
 
+const generateRoomId = () => `ROOM-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+
 export function LobbyRoute() {
   const navigate = useNavigate();
   const setPlayer = useGameStore((state) => state.setPlayer);
   const [playerName, setPlayerName] = useState('');
   const [playerRole, setPlayerRole] = useState<PlayerRole>('monitor');
+  const [roomId, setRoomId] = useState(generateRoomId());
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -16,7 +19,7 @@ export function LobbyRoute() {
       return;
     }
 
-    setPlayer(playerName.trim(), playerRole);
+    setPlayer(playerName.trim(), playerRole, roomId.trim().toUpperCase());
     navigate(`/ops/${playerRole === 'monitor' ? 'monitor' : 'bridge'}`);
   };
 
@@ -44,6 +47,22 @@ export function LobbyRoute() {
                 value={playerName}
               />
             </div>
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm text-slate-300">Sala compartida</span>
+            <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-slate-900/80 px-4 py-3">
+              <Shield size={18} className="text-emerald-300" />
+              <input
+                className="w-full bg-transparent uppercase tracking-[0.2em] text-slate-100 outline-none placeholder:text-slate-500"
+                onChange={(event) => setRoomId(event.target.value)}
+                placeholder="ROOM-1234ABCD"
+                value={roomId}
+              />
+            </div>
+            <p className="text-xs text-slate-500">
+              Usa el mismo código en dos navegadores distintos para compartir la misma crisis.
+            </p>
           </label>
 
           <div className="grid gap-2">

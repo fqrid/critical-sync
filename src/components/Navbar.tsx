@@ -6,6 +6,7 @@ export function Navbar() {
   const navigate = useNavigate();
   const playerName = useGameStore((state) => state.playerName);
   const playerRole = useGameStore((state) => state.playerRole);
+  const roomId = useGameStore((state) => state.roomId);
   const abortMission = useGameStore((state) => state.abortMission);
 
   return (
@@ -27,6 +28,9 @@ export function Navbar() {
           </div>
           <div className="rounded-full border border-emerald-500/15 bg-slate-900/80 px-4 py-2">
             <span className="text-slate-400">Rol:</span> {playerRole === 'monitor' ? 'Monitor' : playerRole === 'technician' ? 'Técnico' : 'Pendiente'}
+          </div>
+          <div className="rounded-full border border-emerald-500/15 bg-slate-900/80 px-4 py-2">
+            <span className="text-slate-400">Sala:</span> {roomId || 'Sin sala'}
           </div>
           <button
             className="danger-button"

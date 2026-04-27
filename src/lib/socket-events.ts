@@ -5,6 +5,7 @@ export const SOCKET_EVENTS = {
   logEvent: 'log:event',
   securityCode: 'security:code',
   missionState: 'mission:state',
+  codeResult: 'code:result',
   errorEvent: 'error:event',
   joinSession: 'session:join',
   commandRun: 'command:run',

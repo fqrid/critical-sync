@@ -1,5 +1,5 @@
 import { KeyRound, TerminalSquare } from 'lucide-react';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuickActions } from '../components/QuickActions';
 import { useGameStore } from '../store/useGameStore';
@@ -14,6 +14,7 @@ export function BridgeRoute() {
   const submitBridgeCommand = useGameStore((state) => state.submitBridgeCommand);
   const submitSecurityCode = useGameStore((state) => state.submitSecurityCode);
   const playerRole = useGameStore((state) => state.playerRole);
+  const lastCodeResult = useGameStore((state) => state.lastCodeResult);
 
   const handleCommand = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,11 +26,13 @@ export function BridgeRoute() {
 
   const validateCode = () => {
     submitSecurityCode(submittedCode);
+  };
 
-    if (submittedCode === securityCode) {
+  useEffect(() => {
+    if (lastCodeResult?.ok) {
       navigate('/ops/monitor');
     }
-  };
+  }, [lastCodeResult, navigate]);
 
   return (
     <div className="grid gap-6">
@@ -87,6 +90,11 @@ export function BridgeRoute() {
           </button>
         </div>
         <p className="mt-4 text-sm text-slate-400">El Monitor dicta el código de seguridad para habilitar la coordinación de maniobras.</p>
+        {lastCodeResult ? (
+          <p className={`mt-3 text-sm ${lastCodeResult.ok ? 'text-emerald-300' : 'text-red-300'}`}>
+            {lastCodeResult.message}
+          </p>
+        ) : null}
       </section>
     </div>
   );
