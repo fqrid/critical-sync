@@ -5,91 +5,59 @@ Sistema asimetrico de gestion de crisis para trabajo en parejas:
 - Tecnico: ejecuta acciones y comandos para contencion.
 
 ## Estudiante
+## Estudiante
 - Farid Esteban Castellanos Semanate
 
 ## Integrantes
 - Integrante 1: [Nombre completo]
 - Integrante 2: [Nombre completo]
 
-
 ## Tematica Elegida
 Gestion de Data Center (Infraestructura Cloud)
 
-## Enlace al Repositorio
-- GitHub: [Pegar URL del repositorio]
-
-## Stack Tecnologico
-- React + Vite
-- React Router v7
-- Zustand
-- Socket.IO Client
-- Tailwind CSS
-- Lucide React
-
-## Configuracion Socket Backend
-1. Crear archivo .env en la raiz del proyecto.
-2. Definir la URL del backend:
-
-    VITE_SOCKET_URL=http://localhost:3001
-
-3. Levantar backend y frontend.
-
-### Eventos Esperados (contrato sugerido)
-- Cliente -> Servidor
-   - session:join
-   - command:run
-   - action:quick
-   - code:submit
-   - mission:abort
-
-- Servidor -> Cliente
-   - telemetry:update
-   - log:event
-   - security:code
-   - mission:state
-   - error:event
+## Estructura del Repositorio
+- `/frontend`: aplicacion React + Vite + Zustand + Tailwind
+- `/backend`: servidor Node.js + Express + Socket.IO + Swagger UI
 
 ## Instalacion
-1. Instalar dependencias:
+1. Backend
+   cd backend
    npm install
-2. Instalar dependencias del backend:
-   cd server
+   npm start
+2. Frontend
+   cd frontend
    npm install
-3. Ejecutar backend Socket.io:
-   npm run server
-4. Ejecutar frontend en desarrollo:
    npm run dev
-5. Build de produccion:
-   npm run build
-6. Vista previa de build:
-   npm run preview
 
-## Backend Socket.io Basico
-- Archivo: server/index.js
-- Puerto por defecto: 3001 (variable PORT opcional)
-- URL frontend esperada: VITE_SOCKET_URL=http://localhost:3001
-- Documentacion Swagger UI: http://localhost:3001/api-docs
+## Frontend
+- Archivo de entorno: `/frontend/.env`
+- Variable requerida:
+  - `VITE_SOCKET_URL=http://localhost:3001`
 
-Eventos que recibe y reenvia a todos los clientes:
-- command:run
-- action:quick
-- code:submit
+## Backend
+- Servidor principal: `/backend/index.js`
+- Dependencias: `express`, `socket.io`, `swagger-ui-express`
+- Swagger UI: `http://localhost:3001/api-docs`
 
-Eventos adicionales que emite:
-- telemetry:update (cada 2 segundos)
-- log:event
-- mission:state (al conectar)
-- security:code (cuando llega code:submit con code)
-- code:result (respuesta de validacion por sala)
+## Contrato de Sockets
+- Cliente -> Servidor:
+  - `session:join`
+  - `command:run`
+  - `action:quick`
+  - `code:submit`
+  - `mission:abort`
+- Servidor -> Cliente:
+  - `telemetry:update`
+  - `log:event`
+  - `security:code`
+  - `mission:state`
+  - `code:result`
+  - `error:event`
 
-## Uso de Salas
-1. En el Lobby se define nombre, rol y sala compartida.
-2. Monitor y Tecnico deben usar el mismo roomId para compartir la misma crisis.
-3. Cada sala mantiene su propia telemetria, codigo de seguridad y estado critico.
-
-## Rutas Principales
-- /: Lobby para registro y seleccion de rol.
-- /ops/monitor: vista de solo lectura para monitor.
+## Notas de Ejecucion
+1. El Monitor y el Tecnico deben usar el mismo `roomId` para compartir la misma crisis.
+2. La telemetria y la validacion del codigo son gestionadas por sala en el backend.
+3. El frontend no contiene logica simulada local para la telemetria; depende del backend.
 - /ops/bridge: vista de accion para tecnico.
 
 ## Flujo General
